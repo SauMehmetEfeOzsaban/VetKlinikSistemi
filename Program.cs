@@ -1,33 +1,62 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VetKlinikSistemi.Data;
+using VetKlinikSistemi.Models.Entities;
+
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+// MVC servisleri
 builder.Services.AddControllersWithViews();
+
+// Veritabani baglantisi (User Secrets uzerinden okunur)
 builder.Services.AddDbContext<UygulamaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+// ASP.NET Core Identity ve rol yapilandirmasi
+builder.Services.AddIdentity<Kullanici, IdentityRole>(options =>
+{
+    // Odevdeki "sau" sifresinin kabul edilmesi icin sifre kurallari esnetildi
+    options.Password.RequiredLength = 3;
+    options.Password.RequireDigit = false;
+    options.Password.RequireLowercase = false;
+    options.Password.RequireUppercase = false;
+    options.Password.RequireNonAlphanumeric = false;
+
+    options.User.RequireUniqueEmail = true;
+})
+.AddEntityFrameworkStores<UygulamaDbContext>()
+.AddDefaultTokenProviders();
+
+// Giris yapilmadiginda veya yetki yetmediginde yonlendirilecek sayfalar
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Hesap/GirisYap";
+    options.LogoutPath = "/Hesap/CikisYap";
+    options.AccessDeniedPath = "/Hesap/YetkisizErisim";
+});
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+// Uygulama baslarken rolleri, admin hesabini ve temel verileri olustur
+await VeriBaslatici.BaslatAsync(app.Services);
+
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
+
 app.UseRouting();
 
+// Kimlik dogrulama (Authentication) mutlaka yetkilendirmeden (Authorization) once gelmeli
+app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapStaticAssets();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
