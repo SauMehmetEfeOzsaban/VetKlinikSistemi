@@ -1,47 +1,120 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="tr">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - VetKlinikSistemi</title>
-    <script type="importmap"></script>
+    <title>@ViewData["Title"] - VetKlinik Sistemi</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/VetKlinikSistemi.styles.css" asp-append-version="true" />
 </head>
-<body>
+<body class="d-flex flex-column min-vh-100">
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">VetKlinikSistemi</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+            <div class="container">
+                <a class="navbar-brand fw-bold" asp-controller="Home" asp-action="Index">VetKlinik Sistemi</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#anaMenu">
                     <span class="navbar-toggler-icon"></span>
                 </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
+
+                <div class="collapse navbar-collapse" id="anaMenu">
+                    <!-- Sol Taraf: Rol Bazli Menuler -->
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                         <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Ana Sayfa</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
+
+                        @if (User.IsInRole("Admin"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-warning" asp-controller="Admin" asp-action="Index">Admin Paneli</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Klinikler" asp-action="Index">Klinikler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Hizmetler" asp-action="Index">Hizmetler</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Veterinerler" asp-action="Index">Veterinerler</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Veteriner"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link text-info" asp-controller="VeterinerPanel" asp-action="Index">Veteriner Paneli</a>
+                            </li>
+                        }
+
+                        @if (User.IsInRole("Uye"))
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="EvcilHayvanlar" asp-action="Index">Evcil Hayvanlarım</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Randevular" asp-action="Index">Randevularım</a>
+                            </li>
+                        }
+                    </ul>
+
+                    <!-- Sag Taraf: Hesap Menusu -->
+                    <ul class="navbar-nav ms-auto">
+                        @if (User.Identity != null && User.Identity.IsAuthenticated)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Hesap" asp-action="Profil">
+                                    Profilim (@User.Identity.Name)
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <form asp-controller="Hesap" asp-action="CikisYap" method="post" class="d-inline">
+                                    <button type="submit" class="btn btn-outline-light btn-sm ms-2 mt-1">Çıkış Yap</button>
+                                </form>
+                            </li>
+                        }
+                        else
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Hesap" asp-action="GirisYap">Giriş Yap</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="btn btn-primary btn-sm ms-2 mt-1" asp-controller="Hesap" asp-action="KayitOl">Kayıt Ol</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
         </nav>
     </header>
-    <div class="container">
+
+    <div class="container my-3 flex-grow-1">
+        <!-- Basari ve hata bildirim kutulari -->
+        @if (TempData["Basari"] != null)
+        {
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                @TempData["Basari"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+        @if (TempData["Hata"] != null)
+        {
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                @TempData["Hata"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }
+
         <main role="main" class="pb-3">
             @RenderBody()
         </main>
     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2026 - VetKlinikSistemi - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+    <footer class="border-top footer text-muted py-3 mt-auto bg-light">
+        <div class="container text-center">
+            &copy; 2026 - VetKlinikSistemi | Sakarya Üniversitesi Web Programlama Projesi
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

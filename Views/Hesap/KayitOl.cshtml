@@ -1,0 +1,69 @@
+﻿@model VetKlinikSistemi.Models.ViewModels.KayitViewModel
+@{
+    ViewData["Title"] = "Kayıt Ol";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6 col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Hayvan Sahibi Kayıt Formu</h4>
+            </div>
+            <div class="card-body">
+                <form asp-action="KayitOl" method="post">
+                    <!-- Genel model hatalarini listeler -->
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Ad" class="form-label"></label>
+                            <input asp-for="Ad" class="form-control" placeholder="Adınız" />
+                            <span asp-validation-for="Ad" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label asp-for="Soyad" class="form-label"></label>
+                            <input asp-for="Soyad" class="form-control" placeholder="Soyadınız" />
+                            <span asp-validation-for="Soyad" class="text-danger small"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" placeholder="ornek@eposta.com" />
+                        <span asp-validation-for="Email" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Telefon" class="form-label"></label>
+                        <input asp-for="Telefon" class="form-control" placeholder="05XX XXX XX XX" />
+                        <span asp-validation-for="Telefon" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Sifre" class="form-label"></label>
+                        <input asp-for="Sifre" class="form-control" />
+                        <span asp-validation-for="Sifre" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="SifreTekrar" class="form-label"></label>
+                        <input asp-for="SifreTekrar" class="form-control" />
+                        <span asp-validation-for="SifreTekrar" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Kayıt Ol</button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <small>Zaten hesabınız var mı? <a asp-action="GirisYap">Giriş Yap</a></small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Istemci tarafi (jQuery) dogrulama scriptleri -->
+    <partial name="_ValidationScriptsPartial" />
+}

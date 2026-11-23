@@ -1,0 +1,97 @@
+﻿@model VetKlinikSistemi.Models.ViewModels.ProfilViewModel
+@{
+    ViewData["Title"] = "Profilim";
+}
+
+<div class="row mt-4">
+    <!-- Sol Taraf: Profil Bilgileri -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="mb-0">Profil Bilgilerim</h5>
+                <div>
+                    @foreach (var rol in Model.Roller)
+                    {
+                        <span class="badge bg-info text-dark ms-1">@rol</span>
+                    }
+                </div>
+            </div>
+            <div class="card-body">
+                <form asp-action="Profil" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    <input type="hidden" asp-for="Email" />
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input value="@Model.Email" class="form-control" disabled />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Ad" class="form-label"></label>
+                        <input asp-for="Ad" class="form-control" />
+                        <span asp-validation-for="Ad" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Soyad" class="form-label"></label>
+                        <input asp-for="Soyad" class="form-control" />
+                        <span asp-validation-for="Soyad" class="text-danger small"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Telefon" class="form-label"></label>
+                        <input asp-for="Telefon" class="form-control" />
+                        <span asp-validation-for="Telefon" class="text-danger small"></span>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary">Bilgileri Güncelle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sag Taraf: MCP API Anahtari -->
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">MCP (Yapay Zekâ) Bağlantı Anahtarı</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    Yapay zekâ asistanından (MCP istemcisi) kendi evcil hayvanlarınızın aşı takvimini sorgulamak ve
+                    randevu oluşturmak için bu anahtarı kullanabilirsiniz.
+                </p>
+
+                @if (!string.IsNullOrEmpty(Model.McpApiToken))
+                {
+                    <div class="input-group mb-3">
+                        <input type="text" id="mcpTokenKutusu" class="form-control font-monospace" value="@Model.McpApiToken" readonly />
+                        <button type="button" class="btn btn-outline-secondary" onclick="tokenKopyala()">Kopyala</button>
+                    </div>
+                }
+                else
+                {
+                    <div class="alert alert-warning">Henüz bir MCP API anahtarınız yok.</div>
+                }
+
+                <form asp-action="McpTokenOlustur" method="post">
+                    <button type="submit" class="btn btn-outline-primary">
+                        @(string.IsNullOrEmpty(Model.McpApiToken) ? "Anahtar Oluştur" : "Yeni Anahtar Üret (Eskisi Geçersiz Olur)")
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function tokenKopyala() {
+            var kutu = document.getElementById("mcpTokenKutusu");
+            kutu.select();
+            navigator.clipboard.writeText(kutu.value);
+            alert("MCP API anahtarı panoya kopyalandı!");
+        }
+    </script>
+}
