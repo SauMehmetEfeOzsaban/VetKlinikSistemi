@@ -1,0 +1,99 @@
+﻿@model VetKlinikSistemi.Models.ViewModels.AdminPanelViewModel
+@{
+    ViewData["Title"] = "Admin Paneli";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold mb-0">Admin Yönetim Paneli</h2>
+    <span class="badge bg-warning text-dark fs-6">Yönetici Modu</span>
+</div>
+
+<!-- Sistem Ozet Kartlari -->
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm border-primary h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Klinikler</h6>
+                <h2 class="fw-bold text-primary">@Model.ToplamKlinik</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm border-success h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Hizmetler</h6>
+                <h2 class="fw-bold text-success">@Model.ToplamHizmet</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm border-info h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Veterinerler</h6>
+                <h2 class="fw-bold text-info">@Model.ToplamVeteriner</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm border-secondary h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Üyeler</h6>
+                <h2 class="fw-bold text-secondary">@Model.ToplamUye</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm border-warning h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Bekleyen Randevu</h6>
+                <h2 class="fw-bold text-warning">@Model.BekleyenRandevu</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 col-lg-2">
+        <div class="card text-center shadow-sm border-dark h-100">
+            <div class="card-body">
+                <h6 class="text-muted">Toplam Randevu</h6>
+                <h2 class="fw-bold text-dark">@Model.ToplamRandevu</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Hizli Yonetim Menusu -->
+<div class="card shadow-sm">
+    <div class="card-header bg-dark text-white fw-semibold">
+        Hızlı Yönetim İşlemleri
+    </div>
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <div class="border rounded p-3 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="fw-bold">Klinik Yönetimi</h5>
+                        <p class="text-muted small">Klinik bilgilerini, çalışma günlerini ve açılış-kapanış saatlerini yönetin.</p>
+                    </div>
+                    <a asp-controller="Klinikler" asp-action="Index" class="btn btn-primary btn-sm">Kliniklere Git</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded p-3 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="fw-bold">Hizmet Yönetimi</h5>
+                        <p class="text-muted small">Kliniklerin sunduğu muayene, aşı ve bakım hizmetlerini, süre ve ücretlerini düzenleyin.</p>
+                    </div>
+                    <a asp-controller="Hizmetler" asp-action="Index" class="btn btn-success btn-sm">Hizmetlere Git</a>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="border rounded p-3 h-100 d-flex flex-column justify-content-between">
+                    <div>
+                        <h5 class="fw-bold">Veteriner Yönetimi</h5>
+                        <p class="text-muted small">Klinikte görevli veteriner hekimleri, uzmanlık alanlarını ve müsaitliklerini yönetin.</p>
+                    </div>
+                    <a asp-controller="Veterinerler" asp-action="Index" class="btn btn-info btn-sm text-white">Veterinerlere Git</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

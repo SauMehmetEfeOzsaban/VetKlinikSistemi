@@ -1,0 +1,61 @@
+﻿@model List<VetKlinikSistemi.Models.Entities.Hizmet>
+@{
+    ViewData["Title"] = "Hizmetler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold mb-0">Hizmet Yönetimi</h2>
+    <a asp-action="Ekle" class="btn btn-success">+ Yeni Hizmet Ekle</a>
+</div>
+
+<!-- Klinige gore filtreleme formu -->
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="klinikId" class="form-select" asp-items="ViewBag.Klinikler" onchange="this.form.submit()">
+            <option value="">-- Tüm Klinikler --</option>
+        </select>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Kayıtlı hizmet bulunmuyor. Önce bir klinik ekleyip ardından hizmet tanımlayabilirsiniz.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle bg-white shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Klinik</th>
+                    <th>Hizmet Adı</th>
+                    <th>Açıklama</th>
+                    <th>Süre</th>
+                    <th>Ücret</th>
+                    <th class="text-center" style="width: 180px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hizmet in Model)
+                {
+                    <tr>
+                        <td>@hizmet.Klinik?.Ad</td>
+                        <td class="fw-semibold">@hizmet.Ad</td>
+                        <td>@(string.IsNullOrWhiteSpace(hizmet.Aciklama) ? "-" : hizmet.Aciklama)</td>
+                        <td>@hizmet.SureDakika dk</td>
+                        <td>@hizmet.Ucret.ToString("N2") TL</td>
+                        <td class="text-center">
+                            <a asp-action="Duzenle" asp-route-id="@hizmet.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                            <form asp-action="Sil" asp-route-id="@hizmet.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Bu hizmeti silmek istediğinize emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

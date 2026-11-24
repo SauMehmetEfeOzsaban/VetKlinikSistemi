@@ -24,8 +24,6 @@
     <Folder Include="Controllers\Api\" />
     <Folder Include="Mcp\" />
     <Folder Include="Models\DTOs\" />
-    <Folder Include="Services\Interfaces\" />
-    <Folder Include="Services\Implementations\" />
   </ItemGroup>
 
 </Project>

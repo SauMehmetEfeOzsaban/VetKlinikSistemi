@@ -1,3 +1,5 @@
+using VetKlinikSistemi.Services.Interfaces;
+using VetKlinikSistemi.Services.Implementations;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VetKlinikSistemi.Data;
@@ -7,6 +9,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // MVC servisleri
 builder.Services.AddControllersWithViews();
+
+// Ortak servis katmani kayitlari (MVC, REST API ve MCP bunlari kullanacak)
+builder.Services.AddScoped<IKlinikServisi, KlinikServisi>();
+builder.Services.AddScoped<IHizmetServisi, HizmetServisi>();
 
 // Veritabani baglantisi (User Secrets uzerinden okunur)
 builder.Services.AddDbContext<UygulamaDbContext>(options =>
