@@ -1,0 +1,88 @@
+﻿@model List<VetKlinikSistemi.Models.Entities.Veteriner>
+@{
+    ViewData["Title"] = "Veterinerler";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="fw-bold mb-0">Veteriner Hekim Yönetimi</h2>
+    <a asp-action="Ekle" class="btn btn-primary">+ Yeni Veteriner Ekle</a>
+</div>
+
+<!-- Klinige gore filtreleme -->
+<form asp-action="Index" method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="klinikId" class="form-select" asp-items="ViewBag.Klinikler" onchange="this.form.submit()">
+            <option value="">-- Tüm Klinikler --</option>
+        </select>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Sistemde henüz kayıtlı veteriner hekim bulunmuyor.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle bg-white shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Ad Soyad / Unvan</th>
+                    <th>Klinik</th>
+                    <th>Uzmanlık Alanları</th>
+                    <th>Verdiği Hizmetler</th>
+                    <th class="text-center" style="width: 260px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var vet in Model)
+                {
+                    <tr>
+                        <td>
+                            <div class="fw-semibold">@vet.AdSoyad</div>
+                            <small class="text-muted">@vet.Unvan</small><br />
+                            <small class="text-muted">@vet.Kullanici?.Email</small>
+                        </td>
+                        <td>@vet.Klinik?.Ad</td>
+                        <td>
+                            @if (vet.VeterinerUzmanliklar.Any())
+                            {
+                                foreach (var vu in vet.VeterinerUzmanliklar)
+                                {
+                                    <span class="badge bg-info text-dark me-1 mb-1">@vu.UzmanlikAlani?.Ad</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Belirtilmedi</span>
+                            }
+                        </td>
+                        <td>
+                            @if (vet.VeterinerHizmetler.Any())
+                            {
+                                foreach (var vh in vet.VeterinerHizmetler)
+                                {
+                                    <span class="badge bg-secondary me-1 mb-1">@vh.Hizmet?.Ad</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Belirtilmedi</span>
+                            }
+                        </td>
+                        <td class="text-center">
+                            <a asp-action="Musaitlikler" asp-route-id="@vet.Id" class="btn btn-sm btn-info text-white">Müsaitlik</a>
+                            <a asp-action="Duzenle" asp-route-id="@vet.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                            <form asp-action="Sil" asp-route-id="@vet.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Bu veterineri ve giriş hesabını silmek istediğinize emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

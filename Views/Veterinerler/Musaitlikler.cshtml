@@ -1,0 +1,110 @@
+﻿@model VetKlinikSistemi.Models.ViewModels.MusaitlikFormViewModel
+@{
+    ViewData["Title"] = "Müsaitlik Saatleri";
+
+    // Gun isimlerini Turkce gostermek icin yardimci fonksiyon
+    string GunAdi(DayOfWeek gun) => gun switch
+    {
+        DayOfWeek.Monday => "Pazartesi",
+        DayOfWeek.Tuesday => "Salı",
+        DayOfWeek.Wednesday => "Çarşamba",
+        DayOfWeek.Thursday => "Perşembe",
+        DayOfWeek.Friday => "Cuma",
+        DayOfWeek.Saturday => "Cumartesi",
+        DayOfWeek.Sunday => "Pazar",
+        _ => gun.ToString()
+    };
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <h2 class="fw-bold mb-0">@Model.VeterinerAdSoyad — Müsaitlik Saatleri</h2>
+        <small class="text-muted">
+            Klinik: @Model.KlinikAdi (@Model.KlinikAcilis.ToString(@"hh\:mm") - @Model.KlinikKapanis.ToString(@"hh\:mm"))
+        </small>
+    </div>
+    <a asp-action="Index" class="btn btn-secondary">Veterinerlere Dön</a>
+</div>
+
+<div class="row g-4">
+    <!-- Yeni Musaitlik Ekleme Formu -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white fw-semibold">
+                Yeni Müsaitlik Ekle
+            </div>
+            <div class="card-body">
+                <form asp-action="MusaitlikEkle" method="post">
+                    <input type="hidden" asp-for="VeterinerId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Gun" class="form-label"></label>
+                        <select asp-for="Gun" class="form-select">
+                            <option value="@DayOfWeek.Monday">Pazartesi</option>
+                            <option value="@DayOfWeek.Tuesday">Salı</option>
+                            <option value="@DayOfWeek.Wednesday">Çarşamba</option>
+                            <option value="@DayOfWeek.Thursday">Perşembe</option>
+                            <option value="@DayOfWeek.Friday">Cuma</option>
+                            <option value="@DayOfWeek.Saturday">Cumartesi</option>
+                            <option value="@DayOfWeek.Sunday">Pazar</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BaslangicSaati" class="form-label"></label>
+                        <input asp-for="BaslangicSaati" type="time" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BitisSaati" class="form-label"></label>
+                        <input asp-for="BitisSaati" type="time" class="form-control" />
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">Müsaitlik Ekle</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mevcut Musaitlik Listesi -->
+    <div class="col-md-8">
+        @if (!Model.MevcutMusaitlikler.Any())
+        {
+            <div class="alert alert-info">
+                Bu veteriner için henüz müsaitlik saati tanımlanmamış.
+            </div>
+        }
+        else
+        {
+            <table class="table table-bordered table-hover align-middle bg-white shadow-sm">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Gün</th>
+                        <th>Başlangıç</th>
+                        <th>Bitiş</th>
+                        <th class="text-center" style="width: 170px;">İşlemler</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var m in Model.MevcutMusaitlikler)
+                    {
+                        <tr>
+                            <td class="fw-semibold">@GunAdi(m.Gun)</td>
+                            <td>@m.BaslangicSaati.ToString(@"hh\:mm")</td>
+                            <td>@m.BitisSaati.ToString(@"hh\:mm")</td>
+                            <td class="text-center">
+                                <a asp-action="MusaitlikDuzenle" asp-route-id="@m.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                                <form asp-action="MusaitlikSil" method="post" class="d-inline"
+                                      onsubmit="return confirm('Bu müsaitlik saatini silmek istediğinize emin misiniz?');">
+                                    <input type="hidden" name="id" value="@m.Id" />
+                                    <input type="hidden" name="veterinerId" value="@Model.VeterinerId" />
+                                    <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

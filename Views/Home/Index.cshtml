@@ -1,8 +1,159 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@model VetKlinikSistemi.Models.ViewModels.VitrinViewModel
+@{
+    ViewData["Title"] = "Ana Sayfa";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!-- Ust Tanitim Alani -->
+<div class="p-4 p-md-5 mb-4 rounded-3 bg-light border shadow-sm">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1 class="display-6 fw-bold">VetKlinik Randevu ve Hasta Takip Sistemi</h1>
+            <p class="lead text-muted mb-3">
+                Evcil dostlarınızın muayene, aşı takibi ve online randevu işlemlerini kolayca yönetin.
+            </p>
+            @if (User.Identity != null && User.Identity.IsAuthenticated)
+            {
+                if (User.IsInRole("Uye"))
+                {
+                    <a asp-controller="Randevular" asp-action="Index" class="btn btn-primary me-2">Randevularım</a>
+                    <a asp-controller="EvcilHayvanlar" asp-action="Index" class="btn btn-outline-secondary">Evcil Hayvanlarım</a>
+                }
+                else if (User.IsInRole("Admin"))
+                {
+                    <a asp-controller="Admin" asp-action="Index" class="btn btn-warning">Admin Paneline Git</a>
+                }
+                else if (User.IsInRole("Veteriner"))
+                {
+                    <a asp-controller="VeterinerPanel" asp-action="Index" class="btn btn-info text-white">Veteriner Paneline Git</a>
+                }
+            }
+            else
+            {
+                <a asp-controller="Hesap" asp-action="KayitOl" class="btn btn-primary me-2">Hemen Üye Ol</a>
+                <a asp-controller="Hesap" asp-action="GirisYap" class="btn btn-outline-dark">Giriş Yap</a>
+            }
+        </div>
+    </div>
 </div>
+
+<!-- Klinikler Bolumu -->
+<h3 class="fw-bold mb-3">Kliniklerimiz</h3>
+@if (!Model.Klinikler.Any())
+{
+    <div class="alert alert-secondary">Henüz klinik tanımlanmadı.</div>
+}
+else
+{
+    <div class="row g-3 mb-5">
+        @foreach (var klinik in Model.Klinikler)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold text-primary">@klinik.Ad</h5>
+                        <p class="card-text small text-muted mb-2">@klinik.Adres</p>
+                        <p class="mb-1 small"><strong>Telefon:</strong> @klinik.Telefon</p>
+                        <p class="mb-1 small"><strong>Günler:</strong> @klinik.CalismaGunleri</p>
+                        <p class="mb-0 small">
+                            <strong>Saatler:</strong>
+                            @klinik.AcilisSaati.ToString(@"hh\:mm") - @klinik.KapanisSaati.ToString(@"hh\:mm")
+                        </p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Veteriner Hekimler Bolumu -->
+<h3 class="fw-bold mb-3">Veteriner Hekimlerimiz</h3>
+@if (!Model.Veterinerler.Any())
+{
+    <div class="alert alert-secondary">Henüz veteriner hekim tanımlanmadı.</div>
+}
+else
+{
+    <div class="row g-3 mb-5">
+        @foreach (var vet in Model.Veterinerler)
+        {
+            <div class="col-md-6 col-lg-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title fw-bold mb-0">@vet.AdSoyad</h5>
+                        <small class="text-muted d-block mb-2">@vet.Unvan — @vet.Klinik?.Ad</small>
+
+                        @if (!string.IsNullOrWhiteSpace(vet.Biyografi))
+                        {
+                            <p class="card-text small">@vet.Biyografi</p>
+                        }
+
+                        <div class="mb-2">
+                            <strong class="small d-block">Uzmanlık Alanları:</strong>
+                            @if (vet.VeterinerUzmanliklar.Any())
+                            {
+                                foreach (var vu in vet.VeterinerUzmanliklar)
+                                {
+                                    <span class="badge bg-info text-dark me-1">@vu.UzmanlikAlani?.Ad</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Belirtilmedi</span>
+                            }
+                        </div>
+
+                        <div>
+                            <strong class="small d-block">Verdiği Hizmetler:</strong>
+                            @if (vet.VeterinerHizmetler.Any())
+                            {
+                                foreach (var vh in vet.VeterinerHizmetler)
+                                {
+                                    <span class="badge bg-secondary me-1">@vh.Hizmet?.Ad</span>
+                                }
+                            }
+                            else
+                            {
+                                <span class="text-muted small">Belirtilmedi</span>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+<!-- Hizmetler ve Ucretler Bolumu -->
+<h3 class="fw-bold mb-3">Hizmetlerimiz ve Ücretler</h3>
+@if (!Model.Hizmetler.Any())
+{
+    <div class="alert alert-secondary">Henüz hizmet tanımlanmadı.</div>
+}
+else
+{
+    <div class="table-responsive mb-4">
+        <table class="table table-bordered table-hover align-middle bg-white shadow-sm">
+            <thead class="table-dark">
+                <tr>
+                    <th>Klinik</th>
+                    <th>Hizmet</th>
+                    <th>Açıklama</th>
+                    <th>Süre</th>
+                    <th>Ücret</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var hizmet in Model.Hizmetler)
+                {
+                    <tr>
+                        <td>@hizmet.Klinik?.Ad</td>
+                        <td class="fw-semibold">@hizmet.Ad</td>
+                        <td>@(string.IsNullOrWhiteSpace(hizmet.Aciklama) ? "-" : hizmet.Aciklama)</td>
+                        <td>@hizmet.SureDakika dk</td>
+                        <td class="fw-semibold text-success">@hizmet.Ucret.ToString("N2") TL</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

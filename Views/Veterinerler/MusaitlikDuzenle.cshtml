@@ -1,0 +1,52 @@
+﻿@model VetKlinikSistemi.Models.ViewModels.MusaitlikFormViewModel
+@{
+    ViewData["Title"] = "Müsaitlik Düzenle";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-warning text-dark fw-semibold">
+                Müsaitlik Saatini Düzenle — @Model.VeterinerAdSoyad
+            </div>
+            <div class="card-body">
+                <p class="text-muted small">
+                    Klinik çalışma saatleri: @Model.KlinikAcilis.ToString(@"hh\:mm") - @Model.KlinikKapanis.ToString(@"hh\:mm")
+                </p>
+
+                <form asp-action="MusaitlikDuzenle" method="post">
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="VeterinerId" />
+
+                    <div class="mb-3">
+                        <label asp-for="Gun" class="form-label"></label>
+                        <select asp-for="Gun" class="form-select">
+                            <option value="@DayOfWeek.Monday">Pazartesi</option>
+                            <option value="@DayOfWeek.Tuesday">Salı</option>
+                            <option value="@DayOfWeek.Wednesday">Çarşamba</option>
+                            <option value="@DayOfWeek.Thursday">Perşembe</option>
+                            <option value="@DayOfWeek.Friday">Cuma</option>
+                            <option value="@DayOfWeek.Saturday">Cumartesi</option>
+                            <option value="@DayOfWeek.Sunday">Pazar</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BaslangicSaati" class="form-label"></label>
+                        <input asp-for="BaslangicSaati" type="time" class="form-control" />
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="BitisSaati" class="form-label"></label>
+                        <input asp-for="BitisSaati" type="time" class="form-control" />
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Musaitlikler" asp-route-id="@Model.VeterinerId" class="btn btn-secondary">İptal</a>
+                        <button type="submit" class="btn btn-warning">Güncelle</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
