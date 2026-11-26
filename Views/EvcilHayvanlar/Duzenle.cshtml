@@ -1,0 +1,75 @@
+﻿@model VetKlinikSistemi.Models.ViewModels.EvcilHayvanFormViewModel
+
+@{
+    ViewData["Title"] = "Evcil Hayvan Düzenle";
+}
+
+<h2 class="mb-4">@ViewData["Title"]</h2>
+
+<div class="row">
+    <div class="col-md-7">
+        <form asp-action="Duzenle" method="post" enctype="multipart/form-data">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+            <input type="hidden" asp-for="MevcutFotografYolu" />
+
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+            <div class="mb-3">
+                <label asp-for="Ad" class="form-label"></label>
+                <input asp-for="Ad" class="form-control" />
+                <span asp-validation-for="Ad" class="text-danger"></span>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Tur" class="form-label"></label>
+                    <input asp-for="Tur" class="form-control" />
+                    <span asp-validation-for="Tur" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Irk" class="form-label"></label>
+                    <input asp-for="Irk" class="form-control" />
+                    <span asp-validation-for="Irk" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <label asp-for="DogumTarihi" class="form-label"></label>
+                    <input asp-for="DogumTarihi" type="date" max="@DateTime.Today.ToString("yyyy-MM-dd")" class="form-control" />
+                    <span asp-validation-for="DogumTarihi" class="text-danger"></span>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label asp-for="Kilo" class="form-label"></label>
+                    <input asp-for="Kilo" type="number" step="0.01" class="form-control" />
+                    <span asp-validation-for="Kilo" class="text-danger"></span>
+                </div>
+            </div>
+
+            @if (!string.IsNullOrEmpty(Model.MevcutFotografYolu))
+            {
+                <div class="mb-3">
+                    <label class="form-label d-block">Mevcut Fotoğraf</label>
+                    <img src="@Model.MevcutFotografYolu" alt="@Model.Ad" class="img-thumbnail" style="max-height: 150px;" />
+                </div>
+            }
+
+            <div class="mb-3">
+                <label asp-for="FotografDosyasi" class="form-label">Yeni Fotoğraf Yükle (İsteğe Bağlı)</label>
+                <input asp-for="FotografDosyasi" type="file" accept=".jpg,.jpeg,.png,.webp" class="form-control" />
+                <div class="form-text">Yeni fotoğraf seçmezseniz mevcut fotoğraf korunur.</div>
+                <span asp-validation-for="FotografDosyasi" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Güncelle</button>
+                <a asp-action="Index" class="btn btn-secondary">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

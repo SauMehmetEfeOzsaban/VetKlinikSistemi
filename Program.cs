@@ -14,6 +14,7 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddScoped<IKlinikServisi, KlinikServisi>();
 builder.Services.AddScoped<IHizmetServisi, HizmetServisi>();
 builder.Services.AddScoped<IVeterinerServisi, VeterinerServisi>();
+builder.Services.AddScoped<IEvcilHayvanServisi, EvcilHayvanServisi>();
 // Veritabani baglantisi (User Secrets uzerinden okunur)
 builder.Services.AddDbContext<UygulamaDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));

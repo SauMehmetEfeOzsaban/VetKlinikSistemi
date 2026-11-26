@@ -1,0 +1,62 @@
+﻿@model List<VetKlinikSistemi.Models.Entities.EvcilHayvan>
+
+@{
+    ViewData["Title"] = User.IsInRole("Admin") ? "Tüm Evcil Hayvanlar" : "Evcil Hayvanlarım";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@ViewData["Title"]</h2>
+    <a asp-action="Ekle" class="btn btn-primary">+ Yeni Evcil Hayvan Ekle</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">
+        Henüz kayıtlı bir evcil hayvan bulunmuyor. Yeni kayıt eklemek için yukarıdaki butonu kullanabilirsiniz.
+    </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var hayvan in Model)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    @if (!string.IsNullOrEmpty(hayvan.FotografYolu))
+                    {
+                        <img src="@hayvan.FotografYolu" class="card-img-top" alt="@hayvan.Ad" style="height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="bg-light d-flex align-items-center justify-content-center text-muted" style="height: 200px;">
+                            <span>Fotoğraf Yok</span>
+                        </div>
+                    }
+
+                    <div class="card-body">
+                        <h5 class="card-title">@hayvan.Ad</h5>
+                        <p class="card-text mb-1"><strong>Tür / Irk:</strong> @hayvan.Tur - @hayvan.Irk</p>
+                        <p class="card-text mb-1"><strong>Doğum Tarihi:</strong> @hayvan.DogumTarihi.ToString("dd.MM.yyyy")</p>
+                        <p class="card-text mb-1"><strong>Kilo:</strong> @hayvan.Kilo kg</p>
+
+                        @if (User.IsInRole("Admin") && hayvan.Sahip != null)
+                        {
+                            <p class="card-text text-muted small mt-2 mb-0">
+                                <strong>Sahip:</strong> @hayvan.Sahip.Ad @hayvan.Sahip.Soyad (@hayvan.Sahip.Email)
+                            </p>
+                        }
+                    </div>
+
+                    <div class="card-footer bg-white d-flex justify-content-between gap-2">
+                        <a asp-action="Detay" asp-route-id="@hayvan.Id" class="btn btn-sm btn-outline-info">Detay</a>
+                        <a asp-action="Duzenle" asp-route-id="@hayvan.Id" class="btn btn-sm btn-outline-warning">Düzenle</a>
+                        <form asp-action="Sil" asp-route-id="@hayvan.Id" method="post" onsubmit="return confirm('@hayvan.Ad kaydını silmek istediğinize emin misiniz?');">
+                            @Html.AntiForgeryToken()
+                            <button type="submit" class="btn btn-sm btn-outline-danger">Sil</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

@@ -1,0 +1,55 @@
+﻿@model VetKlinikSistemi.Models.Entities.EvcilHayvan
+
+@{
+    ViewData["Title"] = $"{Model.Ad} - Detay";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>@Model.Ad</h2>
+    <div class="d-flex gap-2">
+        <a asp-action="Duzenle" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+        <a asp-action="Index" class="btn btn-secondary">Listeye Dön</a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="row g-0">
+        <div class="col-md-4 bg-light d-flex align-items-center justify-content-center">
+            @if (!string.IsNullOrEmpty(Model.FotografYolu))
+            {
+                <img src="@Model.FotografYolu" class="img-fluid rounded-start" alt="@Model.Ad" style="max-height: 320px; object-fit: cover;" />
+            }
+            else
+            {
+                <span class="text-muted p-5">Fotoğraf Eklenmemiş</span>
+            }
+        </div>
+        <div class="col-md-8">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Evcil Hayvan Bilgileri</h5>
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Ad</dt>
+                    <dd class="col-sm-8">@Model.Ad</dd>
+
+                    <dt class="col-sm-4">Tür</dt>
+                    <dd class="col-sm-8">@Model.Tur</dd>
+
+                    <dt class="col-sm-4">Irk</dt>
+                    <dd class="col-sm-8">@Model.Irk</dd>
+
+                    <dt class="col-sm-4">Doğum Tarihi</dt>
+                    <dd class="col-sm-8">@Model.DogumTarihi.ToString("dd.MM.yyyy")</dd>
+
+                    <dt class="col-sm-4">Kilo</dt>
+                    <dd class="col-sm-8">@Model.Kilo kg</dd>
+
+                    @if (User.IsInRole("Admin") && Model.Sahip != null)
+                    {
+                        <dt class="col-sm-4">Sahip</dt>
+                        <dd class="col-sm-8">@Model.Sahip.Ad @Model.Sahip.Soyad (@Model.Sahip.Email)</dd>
+                    }
+                </dl>
+            </div>
+        </div>
+    </div>
+</div>
