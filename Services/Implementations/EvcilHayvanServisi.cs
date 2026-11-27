@@ -37,9 +37,11 @@ namespace VetKlinikSistemi.Services.Implementations
         public async Task<(EvcilHayvan? Hayvan, bool YetkisizMi)> DetayGetirAsync(int id, string kullaniciId, bool adminMi)
         {
             var hayvan = await _db.EvcilHayvanlar
-                .Include(e => e.Sahip)
-                .Include(e => e.AsiKayitlari)
-                .FirstOrDefaultAsync(e => e.Id == id);
+     .Include(e => e.Sahip)
+     .Include(e => e.AsiKayitlari)
+     .Include(e => e.Randevular)
+         .ThenInclude(r => r.Hizmet)
+     .FirstOrDefaultAsync(e => e.Id == id);
 
             if (hayvan == null)
             {

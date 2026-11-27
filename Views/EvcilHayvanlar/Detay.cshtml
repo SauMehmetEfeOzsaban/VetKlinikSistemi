@@ -53,3 +53,91 @@
         </div>
     </div>
 </div>
+
+<hr class="my-4" />
+
+<!-- Evcil Hayvan Saglik Karti: Gecmis/Yaklasan Asilar ve Muayene Gecmisi -->
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0">Sağlık Kartı ve Aşı Geçmişi</h4>
+    <a asp-controller="AsiKayitlari" asp-action="Ekle" asp-route-evcilHayvanId="@Model.Id"
+       class="btn btn-sm btn-primary">+ Bu Hayvana Aşı Ekle</a>
+</div>
+
+@{
+    var bugun = DateTime.Today;
+    var asilar = Model.AsiKayitlari?.OrderByDescending(a => a.YapildigiTarih).ToList()
+                 ?? new List<VetKlinikSistemi.Models.Entities.AsiKaydi>();
+    var tamamlananRandevular = Model.Randevular?
+        .Where(r => r.Durum == VetKlinikSistemi.Models.Entities.RandevuDurumu.Tamamlandi)
+        .OrderByDescending(r => r.BaslangicTarihSaati)
+        .ToList() ?? new List<VetKlinikSistemi.Models.Entities.Randevu>();
+}
+
+@if (!asilar.Any())
+{
+    <div class="alert alert-info">Bu evcil hayvan için henüz aşı kaydı girilmemiş.</div>
+}
+else
+{
+    <table class="table table-sm table-bordered align-middle mb-4">
+        <thead class="table-light">
+            <tr>
+                <th>Aşı Adı</th>
+                <th>Yapıldığı Tarih</th>
+                <th>Bir Sonraki Doz</th>
+                <th>Durum</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var asi in asilar)
+            {
+                <tr>
+                    <td>@asi.AsiAdi</td>
+                    <td>@asi.YapildigiTarih.ToString("dd.MM.yyyy")</td>
+                    <td>@(asi.SonrakiDozTarihi.HasValue ? asi.SonrakiDozTarihi.Value.ToString("dd.MM.yyyy") : "-")</td>
+                    <td>
+                        @if (!asi.SonrakiDozTarihi.HasValue)
+                        {
+                            <span class="badge bg-secondary">Tek Doz</span>
+                        }
+                        else if (asi.SonrakiDozTarihi.Value.Date < bugun)
+                        {
+                            <span class="badge bg-danger">Süresi Geçti</span>
+                        }
+                        else if (asi.SonrakiDozTarihi.Value.Date <= bugun.AddDays(30))
+                        {
+                            <span class="badge bg-warning text-dark">Yaklaşıyor (30 Gün)</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">Güncel</span>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+<h5 class="mb-2">Muayene Geçmişi</h5>
+@if (!tamamlananRandevular.Any())
+{
+    <div class="alert alert-light border">Henüz tamamlanmış muayene kaydı bulunmamaktadır.</div>
+}
+else
+{
+    <div class="list-group">
+        @foreach (var randevu in tamamlananRandevular)
+        {
+            <div class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>@randevu.Hizmet?.Ad</strong>
+                    <small class="text-muted">@randevu.BaslangicTarihSaati.ToString("dd.MM.yyyy HH:mm")</small>
+                </div>
+                <p class="mb-0 mt-1">
+                    @(string.IsNullOrWhiteSpace(randevu.MuayeneNotu) ? "Muayene notu girilmemiş." : randevu.MuayeneNotu)
+                </p>
+            </div>
+        }
+    </div>
+}

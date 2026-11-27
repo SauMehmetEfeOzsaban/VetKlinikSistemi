@@ -37,6 +37,9 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Veterinerler" asp-action="Index">Veterinerler</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="AsiKayitlari" asp-action="Index">Aşı Kayıtları</a>
+                            </li>
 
                             <li class="nav-item">
     <a class="nav-link" asp-controller="EvcilHayvanlar" asp-action="Index">Evcil Hayvanlar</a>
@@ -48,6 +51,10 @@
                             <li class="nav-item">
                                 <a class="nav-link text-info" asp-controller="VeterinerPanel" asp-action="Index">Veteriner Paneli</a>
                             </li>
+
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="AsiKayitlari" asp-action="Index">Aşı Kayıtları</a>
+                            </li>
                         }
 
                         @if (User.IsInRole("Uye"))
@@ -57,6 +64,9 @@
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Randevular" asp-action="Index">Randevularım</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="AsiKayitlari" asp-action="Index">Aşı Kayıtları</a>
                             </li>
                         }
                     </ul>

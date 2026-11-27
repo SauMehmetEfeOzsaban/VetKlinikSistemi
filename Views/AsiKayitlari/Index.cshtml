@@ -1,0 +1,112 @@
+﻿@model List<VetKlinikSistemi.Models.Entities.AsiKaydi>
+@{
+    ViewData["Title"] = "Aşı Kayıtları";
+    var yaklasanAsilar = ViewBag.YaklasanAsilar as List<VetKlinikSistemi.Models.Entities.AsiKaydi>
+                         ?? new List<VetKlinikSistemi.Models.Entities.AsiKaydi>();
+    var bugun = DateTime.Today;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Aşı Kayıtları</h2>
+    <a asp-action="Ekle" class="btn btn-primary">+ Yeni Aşı Kaydı Ekle</a>
+</div>
+
+<!-- 30 gun icinde zamani gelecek asilar varsa ustte uyari kutusu goster -->
+@if (yaklasanAsilar.Any())
+{
+    <div class="alert alert-warning">
+        <strong>Yaklaşan Aşılar (30 Gün İçinde):</strong>
+        <ul class="mb-0 mt-1">
+            @foreach (var asi in yaklasanAsilar)
+            {
+                var kalanGun = (asi.SonrakiDozTarihi!.Value.Date - bugun).Days;
+                <li>
+                    <strong>@asi.EvcilHayvan?.Ad</strong> - @asi.AsiAdi
+                    (@asi.SonrakiDozTarihi.Value.ToString("dd.MM.yyyy") -
+                    @(kalanGun == 0 ? "Bugün!" : $"{kalanGun} gün kaldı"))
+                </li>
+            }
+        </ul>
+    </div>
+}
+
+<!-- Evcil hayvana gore filtreleme formu -->
+<form method="get" class="row g-2 mb-3">
+    <div class="col-md-4">
+        <select name="evcilHayvanId" class="form-select" asp-items="ViewBag.EvcilHayvanlar">
+            <option value="">-- Tüm Evcil Hayvanlar --</option>
+        </select>
+    </div>
+    <div class="col-auto">
+        <button type="submit" class="btn btn-outline-secondary">Filtrele</button>
+        <a asp-action="Index" class="btn btn-outline-dark">Temizle</a>
+    </div>
+</form>
+
+@if (!Model.Any())
+{
+    <div class="alert alert-info">Henüz kayıtlı aşı bilgisi bulunmamaktadır.</div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle">
+            <thead class="table-dark">
+                <tr>
+                    <th>Evcil Hayvan</th>
+                    <th>Aşı Adı</th>
+                    <th>Yapıldığı Tarih</th>
+                    <th>Bir Sonraki Doz</th>
+                    <th>Durum</th>
+                    <th style="width: 170px;">İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var kayit in Model)
+                {
+                    <tr>
+                        <td>
+                            @if (kayit.EvcilHayvan != null)
+                            {
+                                <strong>@kayit.EvcilHayvan.Ad</strong>
+                                <small class="text-muted">(@kayit.EvcilHayvan.Tur)</small>
+                            }
+                        </td>
+                        <td>@kayit.AsiAdi</td>
+                        <td>@kayit.YapildigiTarih.ToString("dd.MM.yyyy")</td>
+                        <td>
+                            @(kayit.SonrakiDozTarihi.HasValue
+                                ? kayit.SonrakiDozTarihi.Value.ToString("dd.MM.yyyy")
+                                : "-")
+                        </td>
+                        <td>
+                            @if (!kayit.SonrakiDozTarihi.HasValue)
+                            {
+                                <span class="badge bg-secondary">Tek Doz</span>
+                            }
+                            else if (kayit.SonrakiDozTarihi.Value.Date < bugun)
+                            {
+                                <span class="badge bg-danger">Süresi Geçti</span>
+                            }
+                            else if (kayit.SonrakiDozTarihi.Value.Date <= bugun.AddDays(30))
+                            {
+                                <span class="badge bg-warning text-dark">Yaklaşıyor</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Güncel</span>
+                            }
+                        </td>
+                        <td>
+                            <a asp-action="Duzenle" asp-route-id="@kayit.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                            <form asp-action="Sil" asp-route-id="@kayit.Id" method="post" class="d-inline"
+                                  onsubmit="return confirm('Bu aşı kaydını silmek istediğinize emin misiniz?');">
+                                <button type="submit" class="btn btn-sm btn-danger">Sil</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
